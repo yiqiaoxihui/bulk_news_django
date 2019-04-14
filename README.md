@@ -1,0 +1,1 @@
+# bulk_news_django
