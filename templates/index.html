@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>News</title>
+</head>
+<body>
+    <h1>For My Love MIN</h1>
+    {% csrf_token %}
+
+    <form action="npr_download/" method="post">
+        {% csrf_token %}
+        <div >
+            npr     从第<input type="text" id="npr_begin" name="npr_begin">条开始 ，本次取<input type="text" id="npr_count" name="npr_count">条 <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+        <input type="submit" value="downlaod">
+        </div>
+    </form>
+    <form action="interestingengineering_industry_download/" method="post">
+        {% csrf_token %}
+        <div>
+            interestingengineering industry 从第<input type="text" id="interestingengineering_industry_begin" name="interestingengineering_industry_begin">页开始 ，到第<input type="text" id="interestingengineering_industry_end" name="interestingengineering_industry_end">页 <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+        <input type="submit" value="downlaod">
+        </div>
+    </form>
+    <form action="theatlantic_download/" method="post">
+        {% csrf_token %}
+        <div>
+            theatlantic 从第<input type="text" id="theatlantic_begin" name="theatlantic_begin">页开始 ，到第<input type="text" id="theatlantic_end" name="theatlantic_end">页 <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+        <input type="submit" value="downlaod">
+        </div>
+    </form>
+<script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    function npr_submit(){
+        var npr_begin=document.getElementById('npr_begin').value;
+        var npr_count=document.getElementById('npr_count').value;
+        console.log(npr_begin);
+        $.ajax({
+            type: 'post',
+            url : "npr_download/",
+            data : {"npr_begin":npr_begin,"npr_count":npr_count},
+            dataType:'JSON', 
+            headers: {"X-CSRFToken":$('[name="csrfmiddlewaretoken"]').val()},
+            success : function(data) {
+                alert(data.file_name);
+                file_name=data.file_name;
+                
+                // location.href = "/"+file_name;
+            },
+            error : function(err) {
+                console.log(err);
+                alert("下载失败！");
+            }
+        });
+    }
+</script>
+</body>
+</html>
