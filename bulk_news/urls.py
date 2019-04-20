@@ -20,5 +20,14 @@ urlpatterns = [
 	url('npr_download/', view.npr_download),
 	url('theatlantic_download/', view.theatlantic_download),
 	url('interestingengineering_industry_download/', view.interestingengineering_industry_download),
+
+    url('usnews_national_news_download/', view.usnews_national_news_download),
+    # url('usnews_business_download/', view.usnews_business_download),
+    # url('usnews_technology_download/', view.usnews_technology_download),
+
+    url('washingtonpost_download/', view.washingtonpost_download),
+    # url('wsj_review_outlook_u_s_download/', view.wsj_review_outlook_u_s_download),
+    # url('wsj_commentary_u_s_download/', view.wsj_commentary_u_s_download),
+    
     url(r'^$', view.index),
 ]
