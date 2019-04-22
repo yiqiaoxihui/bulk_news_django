@@ -51,6 +51,8 @@ def swarm_npr(begin_news,count):
 		return dic
 	begin_news=int(begin_news)
 	count=int(count)
+	if begin_news<=0:
+		begin_news=0
 	file_name='npr_from_'+str(begin_news)+"_count_"+str(count)+"_"+str(int(time.time()))+".txt"
 	fw=open("download/"+file_name,'w')
 	dic={}
@@ -122,6 +124,10 @@ def swarm_interestingengineering_industry(begin_page,end_page):
 	dic['msg']="download success"
 	begin_page=int(begin_page)
 	end_page=int(end_page)
+	if page_begin<=0:
+		page_begin=1
+	if page_end<=0:
+		page_end=1
 	fw=open("download/"+file_name,'w')
 	for i in range(begin_page,end_page+1):
 		try:
@@ -284,7 +290,7 @@ def download_usnews_national_news(offset,count,type_name):
 					for item in json_text['stories']:
 						try:
 							s="start: "+str(offset+current)+" title: "+item['short_headline'].encode("utf-8")+" ,"+item['pubdate'].encode("utf-8")
-							print s
+							# print s
 							fw.write(s+"\n")
 							current+=1
 						except Exception as e:
@@ -371,6 +377,10 @@ def wsj_opinion(begin_page,end_page,type_name):
 		return dic
 	begin_page=int(begin_page)
 	end_page=int(end_page)
+	if page_begin<=0:
+		page_begin=1
+	if page_end<=0:
+		page_end=1
 	fw=open("download/"+file_name,'w')
 	# fw=open("q_format.html",'r')
 	for i in range(begin_page,end_page+1):
@@ -460,7 +470,7 @@ def swarm_washingtonpost(page_begin,page_end,type_name):
 		page_begin=1
 	if page_end<=0:
 		page_end=1
-	file_name='washingtonpost_opinion_page_from_'+str(page_begin)+"_to_"+str(page_end)+"_"+str(int(time.time()))+".txt"
+	file_name='washingtonpost_'+type_name+'_page_from_'+str(page_begin)+"_to_"+str(page_end)+"_"+str(int(time.time()))+".txt"
 	fw=open("download/"+file_name,'w')
 	limit=60
 	count=0
@@ -491,7 +501,6 @@ def swarm_washingtonpost(page_begin,page_end,type_name):
 						print "find error:",e
 						dic['msg']="line error: "+str(e)
 						dic['status']=0
-
 			except Exception as e:
 				print "loads error:", e
 				print req.text
@@ -523,5 +532,405 @@ def washingtonpost_download(request):
 		response['Content-Type'] = 'application/octet-stream'
 		response['Content-Disposition'] = 'attachment;filename="'+file_name+'"'
 		return response
+	else:
+		return HttpResponse(json.dumps(data), content_type='application/json')
+#easy
+def swarm_theguardian(begin_page,end_page):
+	headers = {}
+	headers["User-Agent"] = "Mozilla/5.0 (Windows NT 5.2) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.122 Safari/534.30"
+	headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+	headers["Accept-Language"] = "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3"
+	headers["Accept-Encoding"] = "gzip, deflate"
+	headers["Upgrade-Insecure-Requests"] = "1"
+	file_name='theguardian_page_'+str(begin_page)+"_to_"+str(end_page)+"_"+str(int(time.time()))+".txt"
+	count=0
+	dic={}
+	dic['status']=1
+	dic['msg']="download success"
+	if str(begin_page).isdigit() == False or str(end_page).isdigit() ==False:
+		print "input error: illege input"
+		dic['msg']="input error: illege input"
+		dic['status']=0
+		return dic
+	begin_page=int(begin_page)
+	end_page=int(end_page)
+	if begin_page <= 1:
+		begin_page=1
+	if end_page <=1:
+		end_page=1
+	fw=open("download/"+file_name,'w')
+	for i in range(begin_page,end_page+1):
+		# time.sleep(1)
+		try:
+			url = 'https://www.theguardian.com/commentisfree?page='+str(i)
+			req = requests.get(url, headers=headers, timeout=60)
+			# req.encoding="utf-8"
+			soup = BeautifulSoup((req.text).encode('utf-8'), 'html.parser')
+			list = []
+			for item in soup.find_all(name='div',attrs={"class":"fc-item__container"}):
+				count+=1
+				a=item.find('a',attrs={"class":"u-faux-block-link__overlay js-headline-text"})
+				pub_time=item.find('time',attrs={"class":"fc-item__timestamp"})
+				s="page:"+str(i)+" count: "+str(count)+" title: "+a.text.encode('utf-8').strip()+' ,'+pub_time['datetime'].encode('utf-8')[0:10]
+				print s
+				fw.write(s+"\n")
+				#print(a['href'])
+				#print(a.string)
+		except Exception as e:
+			print "parser error:",e
+			dic['msg']="request error: "+str(e)
+			dic['status']=0
+	fw.close()
+	dic['file_name']=file_name
+	return dic
+def theguardian_download(request):
+	data ={}
+	data['status']=0
+	if request.POST:
+		page_begin = request.POST['theguardian_begin']
+		page_end = request.POST['theguardian_end']
+		# data['baseDir']=baseDir
+		dic=swarm_theguardian(page_begin,page_end)
+		if dic['status'] ==0:
+			data['msg']=dic['msg']
+			log("visit theguardian fail:"+data['msg']+","+page_begin+"~"+page_end,request)
+			return HttpResponse(json.dumps(data), content_type='application/json')
+		log("visit theguardian success,"+page_begin+"~"+page_end,request)
+		data['status']=1
+		file_name=dic['file_name']
+		data['file_name']=file_name
+		file=open("download/"+file_name,'rb')
+		response = FileResponse(file)
+		response['Content-Type'] = 'application/octet-stream'
+		response['Content-Disposition'] = 'attachment;filename="'+file_name+'"'
+		return response
+		# return HttpResponse(json.dumps(data), content_type='application/json')
+	else:
+		return HttpResponse(json.dumps(data), content_type='application/json')
+
+#easy
+def swarm_financial_times(begin_page,end_page):
+	headers = {}
+	headers["User-Agent"] = "Mozilla/5.0 (Windows NT 5.2) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.122 Safari/534.30"
+	headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+	headers["Accept-Language"] = "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3"
+	headers["Accept-Encoding"] = "gzip, deflate"
+	headers["Upgrade-Insecure-Requests"] = "1"
+	file_name='financial_times_page_'+str(begin_page)+"_to_"+str(end_page)+"_"+str(int(time.time()))+".txt"
+	count=0
+	dic={}
+	dic['status']=1
+	dic['msg']="download success"
+	if str(begin_page).isdigit() == False or str(end_page).isdigit() ==False:
+		print "input error: illege input"
+		dic['msg']="input error: illege input"
+		dic['status']=0
+		return dic
+	begin_page=int(begin_page)
+	end_page=int(end_page)
+	if begin_page <= 1:
+		begin_page=1
+	if end_page <=1:
+		end_page=1
+	fw=open("download/"+file_name,'w')
+	for i in range(begin_page,end_page+1):
+		# time.sleep(1)
+		try:
+			url = 'https://www.ft.com/opinion?format=&page='+str(i)
+			req = requests.get(url, headers=headers, timeout=60)
+			# req.encoding="utf-8"
+			soup = BeautifulSoup((req.text).encode('utf-8'), 'html.parser')
+			list = []
+			# print req.text
+			for item in soup.find_all(name='li',attrs={"class":"o-teaser-collection__item o-grid-row"}):
+				
+				try:
+					a=item.find('a',attrs={"class":"js-teaser-heading-link"})
+					# print a
+				except Exception as e:
+					print "find a error:", e
+					continue
+				try:
+					pub_time=item.find('time',attrs={"class":"o-date o-teaser__timestamp"})
+				except Exception as e:
+					print "find time error:", e				
+					continue
+				if (not a) or (not pub_time):
+					continue
+				count+=1
+				s="page:"+str(i)+" count: "+str(count)+" title: "+a.text.encode('utf-8').strip()+' ,'+pub_time.text.encode('utf-8')
+				fw.write(s+"\n")
+		except Exception as e:
+			print "parser error:",e
+			dic['msg']="request error: "+str(e)
+			dic['status']=0
+	fw.close()
+	dic['file_name']=file_name
+	return dic
+def financial_times_download(request):
+	data ={}
+	data['status']=0
+	if request.POST:
+		page_begin = request.POST['ft_begin']
+		page_end = request.POST['ft_end']
+		# data['baseDir']=baseDir
+		dic=swarm_financial_times(page_begin,page_end)
+		if dic['status'] ==0:
+			data['msg']=dic['msg']
+			log("visit financial_times fail:"+data['msg']+","+page_begin+"~"+page_end,request)
+			return HttpResponse(json.dumps(data), content_type='application/json')
+		log("visit financial_times success,"+page_begin+"~"+page_end,request)
+		data['status']=1
+		file_name=dic['file_name']
+		data['file_name']=file_name
+		file=open("download/"+file_name,'rb')
+		response = FileResponse(file)
+		response['Content-Type'] = 'application/octet-stream'
+		response['Content-Disposition'] = 'attachment;filename="'+file_name+'"'
+		return response
+		# return HttpResponse(json.dumps(data), content_type='application/json')
+	else:
+		return HttpResponse(json.dumps(data), content_type='application/json')
+
+#easy
+def swarm_csmonitor(begin_page,end_page):
+	headers = {}
+	headers["User-Agent"] = "Mozilla/5.0 (Windows NT 5.2) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.122 Safari/534.30"
+	headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+	headers["Accept-Language"] = "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3"
+	headers["Accept-Encoding"] = "gzip, deflate"
+	headers["Upgrade-Insecure-Requests"] = "1"
+	file_name='csmonitor_page_'+str(begin_page)+"_to_"+str(end_page)+"_"+str(int(time.time()))+".txt"
+	count=0
+	dic={}
+	dic['status']=1
+	dic['msg']="download success"
+	if str(begin_page).isdigit() == False or str(end_page).isdigit() ==False:
+		print "input error: illege input"
+		dic['msg']="input error: illege input"
+		dic['status']=0
+		return dic
+	begin_page=int(begin_page)
+	end_page=int(end_page)
+	if begin_page <= 1:
+		begin_page=1
+	if end_page <=1:
+		end_page=1
+	fw=open("download/"+file_name,'w')
+	for i in range(begin_page,end_page+1):
+		# time.sleep(1)
+		offset=(i-1)*20
+		try:
+			url = 'https://www.csmonitor.com/Commentary/the-monitors-view/(offset)/'+str(offset)+'/(view)/all'
+			print url
+			req = requests.get(url, headers=headers, timeout=60)
+			# req.encoding="utf-8"
+			soup = BeautifulSoup((req.text).encode('utf-8'), 'html.parser')
+			list = []
+			# print req.text
+			for item in soup.find_all(name='div',attrs={"class":"ezv-listing ezc-csm-story row with-thumbnail"}):
+				try:
+					h3=item.find('h3',attrs={"class":"story-headline"})
+					# print a
+				except Exception as e:
+					print "find a error:", e
+					continue
+				if (not h3):
+					continue
+				count+=1
+				s="page:"+str(i)+" count: "+str(count)+" title: "+h3.text.encode('utf-8').strip()
+				# print s
+				fw.write(s+"\n")
+		except Exception as e:
+			print "parser error:",e
+			dic['msg']="request error: "+str(e)
+			dic['status']=0
+	fw.close()
+	dic['file_name']=file_name
+	return dic
+def csmonitor_download(request):
+	data ={}
+	data['status']=0
+	if request.POST:
+		page_begin = request.POST['csmonitor_begin']
+		page_end = request.POST['csmonitor_end']
+		# data['baseDir']=baseDir
+		dic=swarm_csmonitor(page_begin,page_end)
+		if dic['status'] ==0:
+			data['msg']=dic['msg']
+			log("visit csmonitor fail:"+data['msg']+","+page_begin+"~"+page_end,request)
+			return HttpResponse(json.dumps(data), content_type='application/json')
+		log("visit csmonitor success,"+page_begin+"~"+page_end,request)
+		data['status']=1
+		file_name=dic['file_name']
+		data['file_name']=file_name
+		file=open("download/"+file_name,'rb')
+		response = FileResponse(file)
+		response['Content-Type'] = 'application/octet-stream'
+		response['Content-Disposition'] = 'attachment;filename="'+file_name+'"'
+		return response
+		# return HttpResponse(json.dumps(data), content_type='application/json')
+	else:
+		return HttpResponse(json.dumps(data), content_type='application/json')
+#easy
+def swarm_newscientist(begin_page,end_page):
+	headers = {}
+	headers["User-Agent"] = "Mozilla/5.0 (Windows NT 5.2) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.122 Safari/534.30"
+	headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+	headers["Accept-Language"] = "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3"
+	headers["Accept-Encoding"] = "gzip, deflate"
+	headers["Upgrade-Insecure-Requests"] = "1"
+	file_name='newscientist_page_'+str(begin_page)+"_to_"+str(end_page)+"_"+str(int(time.time()))+".txt"
+	count=0
+	dic={}
+	dic['status']=1
+	dic['msg']="download success"
+	if str(begin_page).isdigit() == False or str(end_page).isdigit() ==False:
+		print "input error: illege input"
+		dic['msg']="input error: illege input"
+		dic['status']=0
+		return dic
+	begin_page=int(begin_page)
+	end_page=int(end_page)
+	if begin_page <= 1:
+		begin_page=1
+	if end_page <=1:
+		end_page=1
+	fw=open("download/"+file_name,'w')
+	for i in range(begin_page,end_page+1):
+		try:
+			url = 'https://www.newscientist.com/section/news/page/'+str(i)
+			print url
+			req = requests.get(url, headers=headers, timeout=60)
+			# req.encoding="utf-8"
+			soup = BeautifulSoup((req.text).encode('utf-8'), 'html.parser')
+			list = []
+			# print req.text
+			for item in soup.find_all('div',attrs={"class":"card__content card__content--linked"}):
+				try:
+					h2=item.find('h2',attrs={"class":"card__heading"})
+					# print a
+				except Exception as e:
+					print "find a error:", e
+					continue
+				if (not h2):
+					continue
+				count+=1
+				s="page:"+str(i)+" count: "+str(count)+" title: "+h2.text.encode('utf-8').strip()
+				# print s
+				fw.write(s+"\n")
+		except Exception as e:
+			print "parser error:",e
+			dic['msg']="request error: "+str(e)
+			dic['status']=0
+	fw.close()
+	dic['file_name']=file_name
+	return dic
+def newscientist_download(request):
+	data ={}
+	data['status']=0
+	if request.POST:
+		page_begin = request.POST['newscientist_begin']
+		page_end = request.POST['newscientist_end']
+		# data['baseDir']=baseDir
+		dic=swarm_newscientist(page_begin,page_end)
+		if dic['status'] ==0:
+			data['msg']=dic['msg']
+			log("visit newscientist fail:"+data['msg']+","+page_begin+"~"+page_end,request)
+			return HttpResponse(json.dumps(data), content_type='application/json')
+		log("visit newscientist success,"+page_begin+"~"+page_end,request)
+		data['status']=1
+		file_name=dic['file_name']
+		data['file_name']=file_name
+		file=open("download/"+file_name,'rb')
+		response = FileResponse(file)
+		response['Content-Type'] = 'application/octet-stream'
+		response['Content-Disposition'] = 'attachment;filename="'+file_name+'"'
+		return response
+		# return HttpResponse(json.dumps(data), content_type='application/json')
+	else:
+		return HttpResponse(json.dumps(data), content_type='application/json')
+#easy
+def swarm_nature(begin_page,end_page):
+	headers = {}
+	headers["User-Agent"] = "Mozilla/5.0 (Windows NT 5.2) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.122 Safari/534.30"
+	headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+	headers["Accept-Language"] = "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3"
+	headers["Accept-Encoding"] = "gzip, deflate"
+	headers["Upgrade-Insecure-Requests"] = "1"
+	file_name='nature_page_'+str(begin_page)+"_to_"+str(end_page)+"_"+str(int(time.time()))+".txt"
+	count=0
+	dic={}
+	dic['status']=1
+	dic['msg']="download success"
+	if str(begin_page).isdigit() == False or str(end_page).isdigit() ==False:
+		print "input error: illege input"
+		dic['msg']="input error: illege input"
+		dic['status']=0
+		return dic
+	begin_page=int(begin_page)
+	end_page=int(end_page)
+	if begin_page <= 1:
+		begin_page=1
+	if end_page <=1:
+		end_page=1
+	fw=open("download/"+file_name,'w')
+	for i in range(begin_page,end_page+1):
+		try:
+			url = 'https://www.nature.com/opinion?page='+str(i)
+			print url
+			req = requests.get(url, headers=headers, timeout=60)
+			# req.encoding="utf-8"
+			soup = BeautifulSoup((req.text).encode('utf-8'), 'html.parser')
+			list = []
+			# print req.text
+			for item in soup.find_all('div',attrs={"class":"c-article-item__copy"}):
+				try:
+					h3=item.find('h3',attrs={"class":"c-article-item__title mb10"})
+					# print a
+				except Exception as e:
+					print "find a error:", e
+					continue
+				try:
+					pub_time=item.find('span',attrs={"class":"c-article-item__date"})
+					# print a
+				except Exception as e:
+					print "find a error:", e
+					continue
+				if (not h3) or (not pub_time):
+					continue
+				count+=1
+				s="page:"+str(i)+" count: "+str(count)+" title: "+h3.text.encode('utf-8').strip()+" ,"+pub_time.text.encode('utf-8')
+				print s
+				fw.write(s+"\n")
+		except Exception as e:
+			print "parser error:",e
+			dic['msg']="request error: "+str(e)
+			dic['status']=0
+	fw.close()
+	dic['file_name']=file_name
+	return dic
+def nature_download(request):
+	data ={}
+	data['status']=0
+	if request.POST:
+		page_begin = request.POST['nature_begin']
+		page_end = request.POST['nature_end']
+		# data['baseDir']=baseDir
+		dic=swarm_nature(page_begin,page_end)
+		if dic['status'] ==0:
+			data['msg']=dic['msg']
+			log("visit nature fail:"+data['msg']+","+page_begin+"~"+page_end,request)
+			return HttpResponse(json.dumps(data), content_type='application/json')
+		log("visit nature success,"+page_begin+"~"+page_end,request)
+		data['status']=1
+		file_name=dic['file_name']
+		data['file_name']=file_name
+		file=open("download/"+file_name,'rb')
+		response = FileResponse(file)
+		response['Content-Type'] = 'application/octet-stream'
+		response['Content-Disposition'] = 'attachment;filename="'+file_name+'"'
+		return response
+		# return HttpResponse(json.dumps(data), content_type='application/json')
 	else:
 		return HttpResponse(json.dumps(data), content_type='application/json')

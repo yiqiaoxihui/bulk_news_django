@@ -4,33 +4,151 @@
 <meta charset="utf-8">
 <title>News</title>
 </head>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="https://v3.bootcss.com/assets/css/docs.min.css">
+<style type="text/css">
+ div{
+    font-size: 16px;
+ }
+</style>
 <body>
-    <h1>For My Love MIN</h1>
-    {% csrf_token %}
-
-    <form action="npr_download/" method="post">
-        {% csrf_token %}
-        <div >
-            npr     从第<input type="text" id="npr_begin" name="npr_begin">条开始 ，本次取<input type="text" id="npr_count" name="npr_count">条 <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
-        <input type="submit" value="downlaod">
+    <div class="container-fluid">
+        <h1>My Love Min</h1>
+        <div class="row show-grid" >
+            <form action="npr_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">npr</p></div>
+                <div class="col-md-3">从第<input type="text" id="npr_begin" name="npr_begin" class="form-control">条开始</div> 
+                <div class="col-md-3">本次取<input type="text" id="npr_count" name="npr_count" class="form-control">条</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+            </form>
         </div>
-    </form>
-    <form action="interestingengineering_industry_download/" method="post">
-        {% csrf_token %}
-        <div>
-            interestingengineering industry 从第<input type="text" id="interestingengineering_industry_begin" name="interestingengineering_industry_begin">页开始 ，到第<input type="text" id="interestingengineering_industry_end" name="interestingengineering_industry_end">页 <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
-        <input type="submit" value="downlaod">
+        <div class="row show-grid">
+            <form action="interestingengineering_industry_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">interestingengineering industry (5条/页)</p></div>
+                <div class="col-md-3"> 从第<input type="text" id="interestingengineering_industry_begin" name="interestingengineering_industry_begin" class="form-control">页开始</div>
+                <div class="col-md-3">到第<input type="text" id="interestingengineering_industry_end" name="interestingengineering_industry_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+            </form>
         </div>
-    </form>
-    <form action="theatlantic_download/" method="post">
-        {% csrf_token %}
-        <div>
-            theatlantic 从第<input type="text" id="theatlantic_begin" name="theatlantic_begin">页开始 ，到第<input type="text" id="theatlantic_end" name="theatlantic_end">页 <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
-        <input type="submit" value="downlaod">
+        <div class="row show-grid">
+            <form action="theatlantic_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">theatlantic (30条/页)</p></div>
+                <div class="col-md-3">从第<input type="text" id="theatlantic_begin" name="theatlantic_begin" class="form-control">页开始</div>
+                <div class="col-md-3">到第<input type="text" id="theatlantic_end" name="theatlantic_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+                
+            </form>
         </div>
-    </form>
+        <div class="row show-grid" >
+            <form action="usnews_national_news_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">usnews national news</p></div>
+                <div class="col-md-3">从第<input type="text" id="usnews_national_news_begin" name="usnews_national_news_begin" class="form-control">条开始</div> 
+                <div class="col-md-3">本次取<input type="text" id="usnews_national_news_count" name="usnews_national_news_count" class="form-control">条</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-2" style="height:56px;"><p class="news_text">
+                    <select class="form-control" id="usnews_select" name="usnews_select">
+                        <option value="national-news">national-news</option>
+                        <option value="business">business</option>
+                        <option value="technology">technology</option>
+                    </select>
+                </div>
+                <div class="col-md-1"><input type="submit" value="downlaod" class="btn btn-default"></div>
+            </form>
+        </div>
+        <div class="row show-grid" >
+            <form action="wsj_opinion_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">wsj opinion (20/页)</p></div>
+                <div class="col-md-3">从第<input type="text" id="wsj_opinion_begin" name="wsj_opinion_begin" class="form-control">页</div> 
+                <div class="col-md-3">到第<input type="text" id="wsj_opinion_end" name="wsj_opinion_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-2" style="height:56px;"><p class="news_text">
+                    <select class="form-control" id="wsj_select" name="wsj_select">
+                        <option value="review-outlook-u-s">review-outlook-u-s</option>
+                        <option value="commentary-u-s">commentary-u-s</option>
+                        <option value="Bookshelf">Bookshelf</option>
+                        <option value="film-review">film-review</option>
+                        <option value="Letters-to-the-Editor">Letters-to-the-Editor</option>
+                        <option value="cultural-commentary">cultural-commentary</option>
+                    </select>
+                </div>
+                <div class="col-md-1"><input type="submit" value="downlaod" class="btn btn-default"></div>
+            </form>
+        </div>
+        <div class="row show-grid" title="网页上Load More每次加载15条">
+            <form action="washingtonpost_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">washingtonpost_opinion (60条/页,avg:10秒/页)</p></div>
+                <div class="col-md-3">从第<input type="text" id="washingtonpost_begin" name="washingtonpost_begin" class="form-control">页</div> 
+                <div class="col-md-3">到第<input type="text" id="washingtonpost_end" name="washingtonpost_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-2" style="height:56px;"><p class="news_text">
+                    <select class="form-control" id="washingtonpost_select" name="washingtonpost_select">
+                        <option value="the-posts-view">the-posts-view</option>
+                        <option value="outlook">outlook</option>
+                        <option value="local-opinions">local-opinions</option>
+                        <option value="global-opinions">global-opinions</option>
+                        <option value="letters-to-the-editor">letters-to-the-editor</option>
+                    </select>
+                </div>
+                <div class="col-md-1"><input type="submit" value="downlaod" class="btn btn-default"></div>
+            </form>
+        </div>
+        <div class="row show-grid">
+            <form action="theguardian_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">theguardian (20条/页)</p></div>
+                <div class="col-md-3">从第<input type="text" id="theguardian_begin" name="theguardian_begin" class="form-control">页开始</div>
+                <div class="col-md-3">到第<input type="text" id="theguardian_end" name="theguardian_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+                
+            </form>
+        </div>
+        <div class="row show-grid" title="第一页从网页的More Opinion开始，版面上半部分未获取">
+            <form action="financial_times_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">financial times (25条/页)</p></div>
+                <div class="col-md-3">从第<input type="text" id="ft_begin" name="ft_begin" class="form-control">页开始</div>
+                <div class="col-md-3">到第<input type="text" id="ft_end" name="ft_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+                
+            </form>
+        </div>    
+        <div class="row show-grid">
+            <form action="csmonitor_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">csmonitor (20条/页)</p></div>
+                <div class="col-md-3">从第<input type="text" id="csmonitor_begin" name="csmonitor_begin" class="form-control">页开始</div>
+                <div class="col-md-3">到第<input type="text" id="csmonitor_end" name="csmonitor_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+                
+            </form>
+        </div>   
+        <div class="row show-grid" title="">
+            <form action="newscientist_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">newscientist (12条/页)</p></div>
+                <div class="col-md-3">从第<input type="text" id="newscientist_begin" name="newscientist_begin" class="form-control">页开始</div>
+                <div class="col-md-3">到第<input type="text" id="newscientist_end" name="newscientist_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+                
+            </form>
+        </div>    
+        <div class="row show-grid">
+            <form action="nature_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">nature (20条/页)</p></div>
+                <div class="col-md-3">从第<input type="text" id="nature_begin" name="nature_begin" class="form-control">页开始</div>
+                <div class="col-md-3">到第<input type="text" id="nature_end" name="nature_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+                
+            </form>
+        </div>     
+    </div>
+</body>
 <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
-
 <script type="text/javascript">
     function npr_submit(){
         var npr_begin=document.getElementById('npr_begin').value;
@@ -55,5 +173,4 @@
         });
     }
 </script>
-</body>
 </html>

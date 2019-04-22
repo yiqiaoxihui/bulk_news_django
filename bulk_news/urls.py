@@ -26,8 +26,11 @@ urlpatterns = [
     # url('usnews_technology_download/', view.usnews_technology_download),
 
     url('washingtonpost_download/', view.washingtonpost_download),
-    # url('wsj_review_outlook_u_s_download/', view.wsj_review_outlook_u_s_download),
-    # url('wsj_commentary_u_s_download/', view.wsj_commentary_u_s_download),
-    
+    url('wsj_opinion_download/', view.wsj_opinion_download),
+    url('theguardian_download/', view.theguardian_download),
+    url('financial_times_download/', view.financial_times_download),
+    url('csmonitor_download/', view.csmonitor_download),
+    url('newscientist_download/', view.newscientist_download),
+    url('nature_download/', view.nature_download),
     url(r'^$', view.index),
 ]
