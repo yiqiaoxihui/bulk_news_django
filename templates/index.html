@@ -14,7 +14,7 @@
 </style>
 <body>
     <div class="container-fluid">
-        <h1>My Love Min</h1>
+        <h1></h1>
         <div class="row show-grid" >
             <form action="npr_download/" method="post" class="form-inline">
                 {% csrf_token %}
@@ -102,7 +102,15 @@
                 <div class="col-md-3" style="height:56px;"><p class="news_text">theguardian (20条/页)</p></div>
                 <div class="col-md-3">从第<input type="text" id="theguardian_begin" name="theguardian_begin" class="form-control">页开始</div>
                 <div class="col-md-3">到第<input type="text" id="theguardian_end" name="theguardian_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
-                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+                <div class="col-md-2" style="height:56px;"><p class="news_text">
+                    <select class="form-control" id="theguardian_select" name="theguardian_select">
+                        <option value="commentisfree">commentisfree</option>
+                        <option value="lifeandstyle">lifeandstyle</option>
+                        <option value="culture">culture</option>
+                        <option value="sport">sport</option>
+                    </select>
+                </div>
+                <div class="col-md-1"><input type="submit" value="downlaod" class="btn btn-default"></div>
                 
             </form>
         </div>
@@ -142,6 +150,16 @@
                 <div class="col-md-3" style="height:56px;"><p class="news_text">nature (20条/页)</p></div>
                 <div class="col-md-3">从第<input type="text" id="nature_begin" name="nature_begin" class="form-control">页开始</div>
                 <div class="col-md-3">到第<input type="text" id="nature_end" name="nature_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
+                <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
+                
+            </form>
+        </div>   
+        <div class="row show-grid">
+            <form action="history_download/" method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="col-md-3" style="height:56px;"><p class="news_text">history (12条/页,首页18条)</p></div>
+                <div class="col-md-3">从第<input type="text" id="history_begin" name="history_begin" class="form-control">页开始</div>
+                <div class="col-md-3">到第<input type="text" id="history_end" name="history_end" class="form-control">页</div> <!-- <button class="btn btn-default" onclick="npr_submit()" >download</button> -->
                 <div class="col-md-3"><input type="submit" value="downlaod" class="btn btn-default"></div>
                 
             </form>

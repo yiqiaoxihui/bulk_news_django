@@ -32,5 +32,6 @@ urlpatterns = [
     url('csmonitor_download/', view.csmonitor_download),
     url('newscientist_download/', view.newscientist_download),
     url('nature_download/', view.nature_download),
+    url('history_download/', view.history_download),
     url(r'^$', view.index),
 ]
